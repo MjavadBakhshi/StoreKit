@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+
+use Domain\Account\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,8 +19,17 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => "Daniel Mercer",
+            'email' => 'daniel@example.com',
+            'password' => '123456'
         ]);
+
+        User::factory()->create([
+            'name' => "Sofia Bennett",
+            'email' => 'bennett@example.com',
+            'password' => '1234'
+        ]);
+
+
     }
 }
