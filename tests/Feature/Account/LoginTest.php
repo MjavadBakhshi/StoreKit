@@ -5,14 +5,16 @@ namespace Tests\Feature\Account;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Hash;
 
-use Domain\Account\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
+
+use Domain\Account\Models\User;
 
 class LoginTest extends TestCase
 {
     use RefreshDatabase; 
 
-    /** @test */
+    #[Test]
     public function login_returns_token_for_valid_credentials()
     {
         $user = User::factory()->create([
@@ -39,7 +41,7 @@ class LoginTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     function login_failed_for_invalid_credentials()
     {
         $response = $this->postJson("/api/v1/account/login", [
