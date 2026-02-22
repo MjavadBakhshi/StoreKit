@@ -9,7 +9,7 @@ abstract class Controller
 
     function isActionExeption(mixed &$result) :bool
     {
-        return $result instanceof $result;
+        return $result instanceof ActionException;
     }
 
 
@@ -25,7 +25,7 @@ abstract class Controller
     function failedResponse(array $data = [], string $message = "", int $status = 401)
     {
         return response()->json([
-                'error' => true,
+                'ok' => false,
                 'data' => $data,
                 'message' => $message
             ], $status);
