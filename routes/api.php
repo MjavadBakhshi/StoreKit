@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\V1\{
-    Account\AuthController
+    Account\AuthController,
+    Store\StoreController
 };
 
 Route::prefix('v1')->group(function () {
@@ -12,9 +13,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/account/login', [AuthController::class, 'login']);
 
     // Protected routes
-    Route::middleware(['auth:santum'])->group(function() {
+    Route::middleware(['auth:sanctum'])->group(function() {
 
-            
+            // Store
+            Route::post('/stores', [StoreController::class, 'store']);
 
     }); // End protected routes
 

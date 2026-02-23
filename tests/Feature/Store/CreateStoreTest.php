@@ -17,7 +17,6 @@ class CreateStoreTest extends TestCase
     {
         $this->actingAsUser();
 
-
         $response = $this->postJson('/api/v1/stores', [
             'name' => 'Test Store',
             'description' => 'Test description',
@@ -28,19 +27,28 @@ class CreateStoreTest extends TestCase
         $response->assertJson([
             'ok' => true,
             'data' => [
-                'name' => 'Test store',
-                'description' => 'Test description',
-                'user_id' => $this->user->id,
+                'store' => [
+                    'name' => 'Test Store',
+                    'description' => 'Test description',
+                    'user_id' => $this->user->id,
+                ]
             ]
         ]);
+
+        // Checking public_id (uuid) has been generated automatically ?
+        $publicId = $response->json('data')['store']['public_id'] ?? null;
+        $this->assertNotNull($publicId, message: "Sote's public id is not generated.");
+
     }
 
     #[Test]
     function create_store_requires_name()
     {
+        $this->actingAsUser();
+
         $response = $this->postJson("api/v1/stores");
 
-        $response->assertStatus(402); // validation error
+        $response->assertStatus(422); // validation error
         $response->assertJsonValidationErrorFor('name');
     }
 
