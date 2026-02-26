@@ -2,13 +2,17 @@
 
 namespace Domain\Store\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
+use Domain\Account\Models\User;
+use Domain\Catalog\Models\Product;
 use Domain\Shared\Models\BaseModel;
+use Domain\Shared\Models\Concerns\HasPublicId;
 
 class Store extends BaseModel
 {
+    use HasPublicId;
+
     protected $fillable = [
         'user_id',
         'name',
@@ -20,13 +24,13 @@ class Store extends BaseModel
         'public_id' => 'string',
     ];
 
-    protected static function booted()
+    function user() :BelongsTo
     {
-        // Automatically generate uuid for public_id field during creation new store.
-        static::creating(function ($store) {
-            if (!$store->public_id) {
-                $store->public_id = (string) Str::orderedUuid(); // generates a UUID
-            }
-        });
+        return $this->belongsTo(User::class);
+    }
+
+    function products() :HasMany
+    {
+        return $this->hasMany(Product::class);
     }
 }

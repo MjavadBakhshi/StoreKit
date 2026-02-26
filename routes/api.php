@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\V1\{
     Account\AuthController,
-    Store\StoreController
+    Store\StoreController,
+    Catalog\ProductController,
 };
 
 Route::prefix('v1')->group(function () {
@@ -17,6 +18,9 @@ Route::prefix('v1')->group(function () {
 
             // Store
             Route::post('/stores', [StoreController::class, 'store']);
+
+            // Catalog
+            Route::post('/stores/{store}/product', [ProductController::class, 'store']);
 
     }); // End protected routes
 

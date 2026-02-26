@@ -19,4 +19,10 @@ class ActionException extends Exception
             $code ?? $this->code
         );
     }
+
+    // It is just a wrapper to convert type to ActionException.
+    static function from(Exception $e)
+    {
+        return new self($e->getMessage(), $e->getCode());
+    }
 }

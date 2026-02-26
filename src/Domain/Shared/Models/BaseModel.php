@@ -4,9 +4,12 @@ namespace Domain\Shared\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class BaseModel extends Model
 {
+    use HasFactory;
+    
     protected static function newFactory(): Factory
     {
         // Get short class name, e.g. 'User' from 'Domain\Account\Models\User'
