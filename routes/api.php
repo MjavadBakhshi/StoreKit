@@ -16,11 +16,19 @@ Route::prefix('v1')->group(function () {
     // Protected routes
     Route::middleware(['auth:sanctum'])->group(function() {
 
-            // Store
-            Route::post('/stores', [StoreController::class, 'store']);
+        // Store
+        Route::post('/stores', [StoreController::class, 'store']);
 
+        // Group rotues which requires store ownership before doing action.
+        Route::middleware([
+            'can:store-ownership,store'
+        ])
+        ->group(function(){
+            
             // Catalog
             Route::post('/stores/{store}/product', [ProductController::class, 'store']);
+            
+        });
 
     }); // End protected routes
 
