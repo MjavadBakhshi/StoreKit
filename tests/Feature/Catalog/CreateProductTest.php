@@ -91,8 +91,8 @@ class CreateProductTest extends TestCase
         $responseStore2->assertStatus(200);
 
     }
-    
 
+    #[Test]
     function user_cannot_create_new_product_in_other_users_stores()
     {
         $otherUser = User::factory()->create();
@@ -103,7 +103,9 @@ class CreateProductTest extends TestCase
 
         $response = $this->getNewProductResponse(store: $otherUserStore);
 
-        // writing policy assertions here
+        // Assert the response is a 403 Forbidden
+        $response->assertStatus(403);
+
     }
 
 
