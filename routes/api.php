@@ -26,7 +26,11 @@ Route::prefix('v1')->group(function () {
         ->group(function(){
             
             // Catalog
-            Route::post('/stores/{store}/product', [ProductController::class, 'store']);
+            Route::apiResource(
+                '/stores/{store}/products', 
+                ProductController::class
+            );
+            
             
         });
 

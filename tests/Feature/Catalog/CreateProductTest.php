@@ -50,11 +50,6 @@ class CreateProductTest extends TestCase
 
         $response = $this->getNewProductResponse($productData);
 
-        $response = $this->postJson(
-            "api/v1/stores/{$this->store->public_id}/product",
-            $productData
-        );
-
         $response->assertStatus(422);
         $response->assertJsonValidationErrors([
             'title', 
@@ -112,7 +107,7 @@ class CreateProductTest extends TestCase
     //--------- Helpers methods
 
     private function getNewProductResponse(
-        array|null $proudctData = null,
+        array|null $productData = null,
         ?Store $store = null
     )
     {
@@ -120,7 +115,7 @@ class CreateProductTest extends TestCase
         $store = $store ?? $this->store;
 
         return $this->postJson(
-            "api/v1/stores/{$store->public_id}/product",
+            route('products.store', $store->public_id),
             $productData
         );
     }
