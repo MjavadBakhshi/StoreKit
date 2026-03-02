@@ -17,7 +17,8 @@ class Store extends BaseModel
         'user_id',
         'name',
         'description',
-        'public_id'
+        'public_id',
+        'domain_name'
     ];
 
     protected $casts = [

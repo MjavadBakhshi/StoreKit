@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+use Domain\Account\Models\User;
 use Domain\Store\Models\Store;
 
 /**
@@ -22,7 +23,9 @@ class StoreFactory extends Factory
     {
         return [
             'name' => fake()->domainName(),
-            'description' => fake()->text()
+            'description' => fake()->text(),
+            'domain_name' => fake()->domainName(),
+            'user_id' => User::factory()->create(),
         ];
     }
 }
