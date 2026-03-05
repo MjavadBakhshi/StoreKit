@@ -3,6 +3,7 @@
 namespace Tests\Feature\Catalog;
 
 use Domain\Account\Models\User;
+use Domain\Catalog\Enums\ProductStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\Test;
@@ -38,6 +39,15 @@ class CreateProductTest extends TestCase
                 'product' => $this->getDefaultProductData()
             ]
         ]);
+    }
+
+    #[Test]
+    function create_new_draft_product_successfully()
+    {
+        // default product status is always draft.
+        // So store owner can update stock, price and images later.
+        // It provides flexibility during inserting products.
+        // variations can be also added later.
     }
 
 
@@ -125,7 +135,7 @@ class CreateProductTest extends TestCase
         return [
             'title' =>  'Pull and bear T-shirt',
             'slug' => 'pull-and-bear-t-shirt',
-            'description' => 'High quality t-shirt'
+            'description' => 'High quality t-shirt',
         ];
     }
 
