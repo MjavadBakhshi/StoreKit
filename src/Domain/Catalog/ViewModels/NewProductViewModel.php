@@ -2,15 +2,22 @@
 
 namespace Domain\Catalog\ViewModels;
 
-use Domain\Catalog\Models\Product;
+use Domain\Catalog\Models\{Product, ProductVariant};
 use Domain\Shared\ViewModels\ViewModel;
 
 class NewProductViewModel extends ViewModel
 {
-    function __construct(protected Product $product){}
+    function __construct(
+        protected Product $product,
+        protected ProductVariant $defaultProductVariant,
+    ){}
 
     function product() :array
     {
-        return $this->product->toArray();
+        return [
+            ...$this->product->except('id'),
+            'price' => $this->defaultProductVariant->price,
+            'stock' => $this->defaultProductVariant->stock,
+        ];
     }
 }

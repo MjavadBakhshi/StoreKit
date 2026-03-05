@@ -19,9 +19,9 @@ return new class extends Migration
             $table->foreignIdFor(Product::class)->constraind();
             $table->string('sku', 100);
             // 99999999.99
-            $table->decimal('price', 10, 2)->unsigned();
+            $table->decimal('price', 10, 2)->unsigned()->nullable();
             $table->unsignedBigInteger('stock')->default(0);
-            $table->json('attributes');
+            $table->json('attributes')->nullable();
             $table->timestamps();
             // Sku is scoped to be unique in its product 
             $table->unique(['product_id', 'sku']);

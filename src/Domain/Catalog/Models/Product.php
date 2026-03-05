@@ -2,7 +2,7 @@
 
 namespace Domain\Catalog\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 use Domain\Catalog\Builders\ProductBuilder;
 use Domain\Catalog\Enums\ProductStatus;
@@ -36,6 +36,11 @@ class Product extends BaseModel
     function store() :BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    function variants() :HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 
 

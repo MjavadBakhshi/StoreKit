@@ -13,6 +13,8 @@ class ProductFormData extends Data
         public readonly string $title,
         public readonly string $slug,
         public readonly ?string $description,
+        public readonly ?float $price,
+        public readonly int $stock = 0
     ) {}
 
     static function rules(Request $request) :array

@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Catalog;
 
-use Domain\Account\Models\User;
-use Domain\Catalog\Enums\ProductStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Concerns\AuthenticatedUser;
 use Tests\TestCase;
 
+use Domain\Account\Models\User;
+use Domain\Catalog\Models\Product;
 use Domain\Store\Models\Store;
 
 class CreateProductTest extends TestCase
@@ -44,10 +44,23 @@ class CreateProductTest extends TestCase
     #[Test]
     function create_new_draft_product_successfully()
     {
-        // default product status is always draft.
+        // Default product status is always draft.
         // So store owner can update stock, price and images later.
         // It provides flexibility during inserting products.
         // variations can be also added later.
+        $response = $this->getNewProductResponse([
+            ...$this->getDefaultProductData(),
+            // validating optional values for default variant.
+            'stock' => 0,
+            'price' => null
+        ]);
+
+        $response->assertStatus(200);
+
+        // Check the variant record has been labeld as deafult
+        $publicId = $response->json('data.product.public_id');
+        $product = Product::with('variants')->where('public_id', $publicId)->first();
+        $this->assertEquals(true, $product->variants[0]->is_default_variant);
     }
 
 
@@ -136,6 +149,8 @@ class CreateProductTest extends TestCase
             'title' =>  'Pull and bear T-shirt',
             'slug' => 'pull-and-bear-t-shirt',
             'description' => 'High quality t-shirt',
+            'stock' => 200,
+            'price' => 1999.9
         ];
     }
 
