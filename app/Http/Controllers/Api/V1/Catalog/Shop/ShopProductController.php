@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\V1\Catalog\Shop;
 
 use App\Http\Controllers\Controller;
-use Domain\Catalog\Models\Product;
 use Illuminate\Http\Request;
 
 use Domain\Catalog\ViewModels\Shop\ShopProductListViewModel;
+use Domain\Catalog\ViewModels\Shop\ShopProductViewModel;
 
 class ShopProductController extends Controller
 {
@@ -23,8 +23,10 @@ class ShopProductController extends Controller
         );
     }
 
-    public function show(Product $product)
+    public function show(Request $request)
     {
-        
+        return $this->successResponse(
+            data: (new ShopProductViewModel($request->product))->toArray()
+        );
     }
 }

@@ -2,18 +2,26 @@
 
 namespace Tests\Feature\Catalog\Shop;
 
-use Domain\Catalog\Enums\ProductStatus;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
+use Domain\Catalog\Enums\ProductStatus;
 use Domain\Catalog\Models\Product;
 use Domain\Store\Models\Store;
 
 class ShopProductListTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // reset cache before each test to prevent confilicts in domain-store resolving.
+        Cache::flush();
+    }
 
     #[Test]
     public function customer_can_browse_store_products(): void
@@ -86,7 +94,7 @@ class ShopProductListTest extends TestCase
     }
 
     #[Test]
-    public function customer_can_browse_active_products() :void
+    public function customer_can_only_browse_active_products() :void
     {
         // Insert some fake products for each product sttatus (Active, Archive, etc.).
         $store = Store::factory()->create();
@@ -100,7 +108,7 @@ class ShopProductListTest extends TestCase
             ]);
         }
 
-        // Get list of the second store products.
+        // Get list of the store products.
         $activeProductsResponse = $this->fetchProducts($store);
 
         $activeProduct = $activeProductsResponse->json('data.products.0');
@@ -118,11 +126,60 @@ class ShopProductListTest extends TestCase
     #[Test]
     public function customer_can_visit_a_specific_product() :void
     {
+        // create a fake product
+        $product = Product::factory()->create();
+       
+        $response = $this->withHeaders([
+            'X-Host' => $product->store->domain_name,
+        ])->getJson(route('shop.products.show', $product->slug));
 
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'ok' => true,
+            'data' => [
+                'product' => $product->only(
+                    'title', 
+                    'description',
+                    'public_id'
+                )
+            ]
+        ]);
     }
 
+    #[Test]
+    function customer_cannot_visit_a_not_inactive_product()
+    {
+        $product = Product::factory()->create([
+            'status' => ProductStatus::Draft
+        ]);
 
+        $response = $this->withHeaders([
+            'X-Host' => $product->store->domain_name,
+        ])->getJson(route('shop.products.show', $product->slug));
 
+        $response->assertStatus(404);
+    }
+
+    #[Test]
+    function customer_cannot_visit_storeB_product_when_in_storeA()
+    {
+        $storeAProduct = Product::factory()->create([
+            'slug' => 'store-a-product'
+        ]);
+
+        $storeBProduct = Product::factory()->create([
+            'slug' => 'store-b-product'
+        ]);
+
+        $this->assertFalse($storeAProduct->store_id == $storeBProduct->store_id);
+        
+        $response = $this->withHeaders([
+            'X-Host' => $storeAProduct->domain_name,
+        ])->getJson(route('shop.products.show', $storeBProduct->slug));
+
+        $response->assertStatus(404);
+    }
 
     private function fetchProducts(Store $store)
     {

@@ -38,4 +38,5 @@ class Product extends BaseModel
         return $this->belongsTo(Store::class);
     }
 
+
 }
