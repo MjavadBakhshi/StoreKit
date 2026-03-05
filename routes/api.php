@@ -6,12 +6,19 @@ use App\Http\Controllers\Api\V1\{
     Account\AuthController,
     Store\StoreController,
     Catalog\ProductController,
+    Catalog\Shop\ShopProductController,
 };
+
+// Middlewares
+use Domain\Store\Middleware\DomainStoreResolver;
 
 Route::prefix('v1')->group(function () {
     
     // Account Authentication
     Route::post('/account/login', [AuthController::class, 'login']);
+
+
+    ### START Store owner panel routes ###
 
     // Protected routes
     Route::middleware(['auth:sanctum'])->group(function() {
@@ -36,7 +43,23 @@ Route::prefix('v1')->group(function () {
 
     }); // End protected routes
 
+    ### END Store owner panel routes ###
 
+
+    ### START shop routes ###
+
+    Route::prefix('/shop')
+        ->middleware([DomainStoreResolver::class])
+        ->name('shop.')->group(function(){
+
+        Route::apiResource(
+            'products', 
+            ShopProductController::class, 
+            ['only' => ['index', 'show']]
+        );
+
+    });
+    ### END shop routes ###
 
 }); // End of v1.0 api routes
 
