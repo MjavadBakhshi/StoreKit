@@ -15,16 +15,15 @@ use Domain\Catalog\Models\Product;
  */
 class ShopProductBinder
 {
-    function __construct(public readonly string $bindingKey = 'slug'){}
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $bindingKey = 'slug'): Response
     {
         $product = Product::getShopProduct(
-            bindingKey: $this->bindingKey,
+            bindingKey: $bindingKey,
             value: $request->shop_product,
             store: $request->store
         );
