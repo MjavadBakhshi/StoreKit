@@ -17,7 +17,7 @@ class DomainStoreResolver
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $domainName = $request->headers->get('X-Host') ?? $request->getHost();
+        $domainName = $request->getHost();
         $store = DomainStoreResolverAction::execute($domainName);
         
         // Store-Domain pair not found.

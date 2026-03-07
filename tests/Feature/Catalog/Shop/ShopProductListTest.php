@@ -28,6 +28,7 @@ class ShopProductListTest extends TestCase
     {
         // Insert some fake products.
         $store = Store::factory()->create();
+
         $products = Product::factory(5)->create([
             'store_id' => $store->id,
         ]);
@@ -41,6 +42,7 @@ class ShopProductListTest extends TestCase
             ->each(fn($fetchedProduct) => $this->assertTrue(
                 $products->firstWhere('public_id', $fetchedProduct['public_id']) !== null
             ));
+
     }
 
     #[Test]
@@ -128,10 +130,7 @@ class ShopProductListTest extends TestCase
     {
         // create a fake product
         $product = Product::factory()->create();
-       
-        $response = $this->withHeaders([
-            'X-Host' => $product->store->domain_name,
-        ])->getJson(route('shop.products.show', $product->slug));
+        $response = $this->fetchProduct($product->store, $product->slug);
 
         $response->assertStatus(200);
 
@@ -148,21 +147,19 @@ class ShopProductListTest extends TestCase
     }
 
     #[Test]
-    function customer_cannot_visit_a_not_inactive_product()
+    public function customer_cannot_visit_a_not_active_product()
     {
         $product = Product::factory()->create([
             'status' => ProductStatus::Draft
         ]);
 
-        $response = $this->withHeaders([
-            'X-Host' => $product->store->domain_name,
-        ])->getJson(route('shop.products.show', $product->slug));
+        $response = $this->fetchProduct($product->store, $product->slug);
 
         $response->assertStatus(404);
     }
 
     #[Test]
-    function customer_cannot_visit_storeB_product_when_in_storeA()
+    public function customer_cannot_visit_storeB_product_when_in_storeA()
     {
         $storeAProduct = Product::factory()->create([
             'slug' => 'store-a-product'
@@ -174,18 +171,26 @@ class ShopProductListTest extends TestCase
 
         $this->assertFalse($storeAProduct->store_id == $storeBProduct->store_id);
         
-        $response = $this->withHeaders([
-            'X-Host' => $storeAProduct->domain_name,
-        ])->getJson(route('shop.products.show', $storeBProduct->slug));
+        $response = $this->fetchProduct($storeAProduct->store, $storeBProduct->slug);
 
         $response->assertStatus(404);
     }
 
+
+    
+
     private function fetchProducts(Store $store)
     {
         // Get list of products.
-        return $this->withHeaders([
-            'X-Host' => $store->domain_name,
-        ])->getJson(route('shop.products.index'));
+        return $this->getJson(
+            "http://$store->domain_name/api/v1/shop/products"
+        );
+    }
+
+    private function fetchProduct(Store $store, string $slug)
+    {
+        return $this->getJson(
+            "http://{$store->domain_name}/api/v1/shop/products/$slug"
+        );
     }
 }
