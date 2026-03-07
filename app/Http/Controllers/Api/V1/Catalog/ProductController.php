@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Catalog;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 use Domain\Catalog\Actions\InsertProductAction;
 use Domain\Catalog\DataTransferObjects\ProductFormData;
@@ -22,9 +23,9 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductFormData $data, Store $store)
+    public function store(ProductFormData $data, Request $request)
     {
-        $result = InsertProductAction::execute($data, $store);
+        $result = InsertProductAction::execute($data, $request->store);
 
         if($this->isActionExeption($result))
             return $this->failedResponse(message: $result->getMessage());

@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-use Domain\Account\Models\User;
 use Domain\Catalog\Enums\ProductStatus;
 use Domain\Catalog\Models\Product;
 use Domain\Store\Models\Store;
@@ -25,7 +24,7 @@ class ProductFactory extends Factory
     {
         return [
             'title' => fake()->domainName(),
-            'slug' => fake()->unique()->sentence(2),
+            'slug' => str_replace(' ', '-', fake()->unique()->sentence(2)),
             'store_id' => Store::factory()->create(),
             'status' => ProductStatus::Active,
         ];

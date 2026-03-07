@@ -8,9 +8,10 @@ use App\Http\Controllers\Api\V1\{
     Catalog\ProductController,
     Catalog\Shop\ShopProductController,
 };
+
 // Middlewares
 use Domain\Catalog\Middleware\ShopProductBinder;
-use Domain\Store\Middleware\DomainStoreResolver;
+use Domain\Store\Middleware\{DefaultStoreResolver, DomainStoreResolver};
 
 Route::prefix('v1')->group(function () {
     
@@ -26,20 +27,15 @@ Route::prefix('v1')->group(function () {
         // Store
         Route::post('/stores', [StoreController::class, 'store']);
 
-        // Group rotues which requires store ownership before doing action.
-        Route::middleware([
-            'can:store-ownership,store'
-        ])
-        ->group(function(){
+        Route::middleware([DefaultStoreResolver::class])
+            ->group(function(){
+                // Catalog
+                Route::apiResource(
+                    '/products', 
+                    ProductController::class
+                );
+            });
             
-            // Catalog
-            Route::apiResource(
-                '/stores/{store}/products', 
-                ProductController::class
-            );
-            
-            
-        });
 
     }); // End protected routes
 
@@ -62,11 +58,11 @@ Route::prefix('v1')->group(function () {
         ->name('products.index');
 
         Route::get(
-            '/products/{shop_product:slug}', 
+            '/products/{shop_product}', 
             [ShopProductController::class, 'show']
         )
         ->middleware([ShopProductBinder::class])
-        ->name('products.show');
+        ->name('products.show');   
 
     });
     ### END shop routes ###

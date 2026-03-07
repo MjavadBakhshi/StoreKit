@@ -19,7 +19,7 @@ class ProductFormData extends Data
 
     static function rules(Request $request) :array
     {
-        $store = $request?->route('store');
+        $store = $request->store;
 
         return [
             'slug' => [

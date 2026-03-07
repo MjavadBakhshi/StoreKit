@@ -16,14 +16,11 @@ class CreateProductTest extends TestCase
 {
     use RefreshDatabase, AuthenticatedUser;
 
-    protected Store $store;
-
     function setUp(): void
     {
         parent::setUp(); // MUST call this first
        
         $this->actingAsUser();
-        $this->store = Store::factory()->for($this->user)->create();
     }
 
     #[Test]
@@ -95,50 +92,17 @@ class CreateProductTest extends TestCase
        
     }
 
-    #[Test]
-    function user_can_only_create_new_product_in_own_stores()
-    {
-        $secondStore = Store::factory()->for($this->user)->create();
-
-        $responseStore1 = $this->getNewProductResponse();
-
-        $responseStore2 = $this->getNewProductResponse(store: $secondStore);
-
-        $responseStore1->assertStatus(200);
-
-        $responseStore2->assertStatus(200);
-
-    }
-
-    #[Test]
-    function user_cannot_create_new_product_in_other_users_stores()
-    {
-        $otherUser = User::factory()->create();
-
-        $otherUserStore = Store::factory()
-            ->for($otherUser)
-            ->create();
-
-        $response = $this->getNewProductResponse(store: $otherUserStore);
-
-        // Assert the response is a 403 Forbidden
-        $response->assertStatus(403);
-
-    }
-
-
     //--------- Helpers methods
 
     private function getNewProductResponse(
-        array|null $productData = null,
-        ?Store $store = null
+        array|null $productData = null
     )
     {
         $productData = $productData ?? $this->getDefaultProductData();
         $store = $store ?? $this->store;
 
         return $this->postJson(
-            route('products.store', $store->public_id),
+            route('products.store'),
             $productData
         );
     }
