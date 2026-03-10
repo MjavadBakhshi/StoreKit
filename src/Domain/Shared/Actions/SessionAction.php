@@ -7,14 +7,10 @@ use Illuminate\Session\SessionManager;
 
 class SessionAction
 {
-    protected $session;
-    protected $request;
 
-    public function __construct(SessionManager $session, Request $request)
-    {
-        $this->session = $session;
-        $this->request = $request;
-    }
+    public function __construct(
+        protected readonly SessionManager $session
+    ) {}
 
      public function __call($method, $args) {
         // First, check if the method is defined on this class
@@ -65,7 +61,8 @@ class SessionAction
 
     private function getFullKey($key) :string
     {
-        $domain = $this->request->getHost();
+        $domain = str_replace('.', '*', request()->getHost());
+
         return "store:{$domain}:{$key}";
     }
 }

@@ -17,8 +17,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(SessionAction::class, function ($app) {
             return new SessionAction(
-                $app->make(SessionManager::class),
-                $app->make(Request::class)
+                $app->make(SessionManager::class)
             );
         });
     }
