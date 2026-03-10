@@ -12,8 +12,12 @@ class ActionException extends Exception
     // Optional: default HTTP status code
     protected $code = 400;
 
-    public function __construct($message = null, $code = null)
+    public readonly array $data;
+
+    public function __construct($message = null, $code = null, array $data = [])
     {
+        $this->data = $data;
+        
         parent::__construct(
             $message ?? $this->message,
             $code ?? $this->code
@@ -25,4 +29,10 @@ class ActionException extends Exception
     {
         return new self($e->getMessage(), $e->getCode());
     }
+
+    public function getData() :array
+    {
+        return $this->data;
+    }
+    
 }

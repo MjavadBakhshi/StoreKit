@@ -24,7 +24,8 @@ class StoreFactory extends Factory
         return [
             'name' => fake()->domainName(),
             'description' => fake()->text(),
-            'domain_name' => fake()->domainName(),
+            'domain_name' => fake()->unique()->domainName(),
+            // 'domain_name' => fake()->unique()->word().'.storekit.dev',
             'user_id' => User::factory()->create(),
         ];
     }

@@ -7,10 +7,11 @@ use App\Http\Controllers\Api\V1\{
     Store\StoreController,
     Catalog\ProductController,
     Catalog\Shop\ShopProductController,
+    Cart\Shop\ShopCartController,
 };
 
 // Middlewares
-use Domain\Catalog\Middleware\ShopProductBinder;
+use Domain\Catalog\Middleware\{ShopProductBinder, ShopProductVariantBinder};
 use Domain\Store\Middleware\{DefaultStoreResolver, DomainStoreResolver};
 
 Route::prefix('v1')->group(function () {
@@ -63,6 +64,14 @@ Route::prefix('v1')->group(function () {
         )
         ->middleware([ShopProductBinder::class])
         ->name('products.show');   
+
+        /** Cart */
+        Route::post(
+            '/carts/{shop_product_variant}', 
+            [ShopCartController::class, 'update']
+        )
+        ->middleware(ShopProductVariantBinder::class)
+        ->name('carts.update');   
 
     });
     ### END shop routes ###
