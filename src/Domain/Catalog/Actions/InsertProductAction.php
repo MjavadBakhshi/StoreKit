@@ -54,7 +54,7 @@ class InsertProductAction
         ]);
 
         // Store default product variant.
-        $defaultProductVariant = InsertProductVariantAction::execute(
+        $defaultProductVariant = UpsertProductVariantAction::execute(
             $productVariantFormData,
             $product
         );

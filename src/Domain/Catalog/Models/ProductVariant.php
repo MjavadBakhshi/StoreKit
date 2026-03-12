@@ -3,6 +3,7 @@
 namespace Domain\Catalog\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Domain\Catalog\Builders\ProductVariantBuilder;
 use Domain\Shared\Models\BaseModel;
@@ -10,7 +11,7 @@ use Domain\Shared\Models\Concerns\HasPublicId;
 
 class ProductVariant extends BaseModel
 {
-    use HasPublicId;
+    use HasPublicId, SoftDeletes;
 
     protected $guarded = ['id'];
 

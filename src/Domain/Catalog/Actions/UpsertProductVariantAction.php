@@ -6,7 +6,7 @@ use Domain\Catalog\DataTransferObjects\ProductVariantFormData;
 use Domain\Catalog\Models\Product;
 use Domain\Catalog\Models\ProductVariant;
 
-class InsertProductVariantAction
+class UpsertProductVariantAction
 {
     static function execute(
         ProductVariantFormData $data,
@@ -14,13 +14,24 @@ class InsertProductVariantAction
     ): ProductVariant|false
     {
         try {
-
-            $data = [
-                ...$data->toArray(),
+            $variantData = [
+                ...$data->except('public_id')->toArray(),
                 'sku' => $data->sku ?? self::generateRandomSKU($product->id)
             ];
             
-            $productVariant = $product->variants()->create($data);
+            // Checking it is a create or update operation ?
+            if($data->public_id !== null)
+            {
+                $productVariant = $product->variants()
+                    ->where('public_id', $data->public_id)
+                    ->firstOrFail();
+
+                $productVariant->update($variantData);
+            }
+            else
+            {
+                $productVariant = $product->variants()->create($variantData);
+            }
 
             return $productVariant;
         }

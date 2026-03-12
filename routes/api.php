@@ -6,13 +6,17 @@ use App\Http\Controllers\Api\V1\{
     Account\AuthController,
     Store\StoreController,
     Catalog\ProductController,
+    Catalog\ProductVariantController,
     Catalog\Shop\ShopProductController,
     Cart\Shop\ShopCartController,
 };
-
 // Middlewares
 use Domain\Catalog\Middleware\{ShopProductBinder, ShopProductVariantBinder};
-use Domain\Store\Middleware\{DefaultStoreResolver, DomainStoreResolver};
+use Domain\Store\Middleware\{
+    DefaultStoreResolver, 
+    DomainStoreResolver, 
+    EntityStoreOwnershipChecker
+};
 
 Route::prefix('v1')->group(function () {
     
@@ -30,11 +34,25 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware([DefaultStoreResolver::class])
             ->group(function(){
+              
                 // Catalog
+
+                // products
                 Route::apiResource(
                     '/products', 
                     ProductController::class
                 );
+                
+                // product variants
+                Route::apiResource(
+                    '/produccts/{product}/variants',
+                    ProductVariantController::class
+                )
+                ->names('products.variants')
+                ->parameters(['variants' => 'product_variant'])
+                ->middleware(EntityStoreOwnershipChecker::class.':product')
+                ->except(['index', 'show']);
+
             });
             
 

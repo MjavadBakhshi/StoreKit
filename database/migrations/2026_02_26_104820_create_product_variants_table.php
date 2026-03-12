@@ -23,6 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('stock')->default(0);
             $table->json('attributes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+            
             // Sku is scoped to be unique in its product 
             $table->unique(['product_id', 'sku']);
         });
