@@ -5,11 +5,17 @@ namespace Domain\Catalog\DataTransferObjects;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
+
+use Domain\Catalog\Enums\ProductType;
 
 class ProductFormData extends Data
 {
     function __construct(
+        #[WithCast(EnumCast::class)]
+        public readonly ProductType $product_type,
         public readonly string $title,
         public readonly string $slug,
         public readonly ?string $description,

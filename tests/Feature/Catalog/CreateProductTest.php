@@ -8,9 +8,8 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Concerns\AuthenticatedUser;
 use Tests\TestCase;
 
-use Domain\Account\Models\User;
+use Domain\Catalog\Enums\ProductType;
 use Domain\Catalog\Models\Product;
-use Domain\Store\Models\Store;
 
 class CreateProductTest extends TestCase
 {
@@ -26,14 +25,15 @@ class CreateProductTest extends TestCase
     #[Test]
     function create_new_product_successfully()
     {
-        $response = $this->getNewProductResponse();
+        $productData = $this->getDefaultProductData();
+        $response = $this->getNewProductResponse($productData);
 
         $response->assertStatus(200);
-
+        
         $response->assertJson([
             'ok' => true,
             'data' => [
-                'product' => $this->getDefaultProductData()
+                'product' => $productData
             ]
         ]);
     }
@@ -73,7 +73,8 @@ class CreateProductTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonValidationErrors([
             'title', 
-            'slug'
+            'slug',
+            'product_type'
         ]);
     }
 
@@ -114,7 +115,8 @@ class CreateProductTest extends TestCase
             'slug' => 'pull-and-bear-t-shirt',
             'description' => 'High quality t-shirt',
             'stock' => 200,
-            'price' => 1999.9
+            'price' => 1999.9,
+            'product_type' => fake()->randomElement(ProductType::values()),
         ];
     }
 

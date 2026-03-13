@@ -15,7 +15,8 @@ class NewProductViewModel extends ViewModel
     function product() :array
     {
         return [
-            ...$this->product->except('id'),
+            ...$this->product->except(['id', 'product_type', 'status']),
+            'product_type' => $this->product->product_type->value,
             'price' => $this->defaultProductVariant->price,
             'stock' => $this->defaultProductVariant->stock,
         ];

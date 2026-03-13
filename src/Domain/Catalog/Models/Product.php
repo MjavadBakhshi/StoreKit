@@ -5,7 +5,7 @@ namespace Domain\Catalog\Models;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 use Domain\Catalog\Builders\ProductBuilder;
-use Domain\Catalog\Enums\ProductStatus;
+use Domain\Catalog\Enums\{ProductStatus, ProductType};
 use Domain\Shared\Models\BaseModel;
 use Domain\Shared\Models\Concerns\HasPublicId;
 use Domain\Store\Models\Store;
@@ -19,10 +19,12 @@ class Product extends BaseModel
         'slug',
         'description',
         'status',
+        'product_type'
     ];
 
     protected $casts = [
         'status' => ProductStatus::class,
+        'product_type' => ProductType::class,
         'attributes' => 'array',
     ];
 
