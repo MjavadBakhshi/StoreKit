@@ -50,18 +50,11 @@ class InsertProductAction
     ) :ProductVariant
     {
         // Prepare DTO
-
-        $attributes = 
-        collect($data->product_type->defaultVariantAttributes(true))
-        ->mapWithKeys(fn($item) => [$item => null])
-        ->toArray();
-
         $productVariantFormData = ProductVariantFormData::validateAndCreate([
             'product_type' => $data->product_type,
             'stock' => $data->stock,
             'price' => $data->price,
             'is_default_variant' => true,
-            'attributes' => $attributes,
         ]);
 
         // Store default product variant.

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Catalog;
 
+use Domain\Catalog\Enums\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\Test;
@@ -26,7 +27,7 @@ class UpsertProductVariantTest extends TestCase
     {
         $randomVariantData = $this->getRandomVariantData();
         list($product, $response) = $this->createNewVariant($randomVariantData);
-
+        
         $response->assertStatus(200);
 
         $response->assertJson([
@@ -41,13 +42,20 @@ class UpsertProductVariantTest extends TestCase
     function update_a_variant_successfully()
     {
         $randomVariantData = $this->getRandomVariantData();
-        list($product, $variantResponse) = $this->createNewVariant($randomVariantData);
+        list($product, $variantResponse) = 
+        $this->createNewVariant(
+            $randomVariantData,
+            ProductType::Physical
+        );
+
         $variantPublicId = $variantResponse->json('data.product_variant.public_id');
+        
         $updatingData = [
             'stock' => 200,
             'price' => 1500000,
             'attributes' => [
-                'size' => 'Medium'
+                'size' => 'Medium',
+                'df-store-weight' => 500,
             ]
         ];
        
@@ -57,7 +65,6 @@ class UpsertProductVariantTest extends TestCase
         );
 
         $updateResponse->assertStatus(200);
-
         $updateResponse->assertJson([
             'ok' => true,
             'data' => [
@@ -100,11 +107,13 @@ class UpsertProductVariantTest extends TestCase
         $response->assertStatus(403);
     }
 
-    private function createNewVariant(array $data)
+    private function createNewVariant(array $data, ?ProductType $productType = null)
     {
-        $product = Product::factory()->create([
-            'store_id' => $this->store->id,
-        ]);
+        $productData = ['store_id' => $this->store->id];
+        if($productType)
+            $productData['product_type'] = $productType;
+
+        $product = Product::factory()->create($productData);
 
         // The request is being tried to call with other's product
         // This test actually validates the EntityStoreChecker middleware.
@@ -125,7 +134,6 @@ class UpsertProductVariantTest extends TestCase
             'attributes' => [
                 'color' => 'red',
                 'size' => 'Large',
-                'weight' => rand(100, 3000),
             ],
         ];
     }

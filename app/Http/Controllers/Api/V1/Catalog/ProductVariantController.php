@@ -11,12 +11,18 @@ use Domain\Catalog\Actions\{
 use Domain\Catalog\DataTransferObjects\ProductVariantFormData;
 use Domain\Catalog\Models\{Product, ProductVariant};
 use Domain\Catalog\ViewModels\NewProductVariantViewModel;
+use Illuminate\Http\Request;
 
 class ProductVariantController extends Controller
 {
 
-    public function store(Product $product, ProductVariantFormData $data)
-    {
+    public function store(Product $product, Request $request)
+    {        
+        $data = ProductVariantFormData::validateAndCreate([
+            ...$request->all(),
+            'product_type' => $product->product_type
+        ]);
+        
         $result = UpsertProductVariantAction::execute($data, $product);
 
         if($this->isActionExeption($result))
@@ -29,13 +35,13 @@ class ProductVariantController extends Controller
     public function update(
         Product $product, 
         ProductVariant $product_variant, 
-        ProductVariantFormData $data
+        Request $request
     )
     {
         // Validate product-variant pair
         $this->isVariantForProduct($product, $product_variant);
-        
-        return $this->store($product, $data);
+
+        return $this->store($product, $request);
     }
 
     public function destroy(Product $product, ProductVariant $product_variant)

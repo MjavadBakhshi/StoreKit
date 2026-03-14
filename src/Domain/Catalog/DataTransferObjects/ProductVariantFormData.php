@@ -30,7 +30,7 @@ class ProductVariantFormData extends Data
         // Get default attirbures rules
         $productType = $context->fullPayload['product_type'];
         $attributesRules = $productType->defaultVariantAttributes();
-        // add "attributes." prefix to adopt validation rulse.
+        // adding "attributes." prefix to adopt validation rulse.
         $attributesRules = 
         collect($attributesRules)
             ->mapWithKeys(

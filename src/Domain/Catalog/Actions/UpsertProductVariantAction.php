@@ -3,6 +3,7 @@
 namespace Domain\Catalog\Actions;
 
 use Domain\Catalog\DataTransferObjects\ProductVariantFormData;
+use Domain\Catalog\Enums\ProductType;
 use Domain\Catalog\Models\Product;
 use Domain\Catalog\Models\ProductVariant;
 
@@ -23,8 +24,16 @@ class UpsertProductVariantAction
             if($data->public_id !== null)
             {
                 $productVariant = $product->variants()
-                    ->where('public_id', $data->public_id)
-                    ->firstOrFail();
+                ->where('public_id', $data->public_id)
+                ->firstOrFail();
+                
+                // Get previous attributes and merge with new attributes
+                $variantData['attributes'] = [
+                    // old attributes list
+                    ...($productVariant->attributes ?? []),
+                    // updated items (it might add or update current items)
+                    ...($data->attributes ?? [])
+                ];
 
                 $productVariant->update($variantData);
             }
