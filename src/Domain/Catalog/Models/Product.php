@@ -3,6 +3,7 @@
 namespace Domain\Catalog\Models;
 
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Domain\Catalog\Builders\ProductBuilder;
 use Domain\Catalog\Enums\{ProductStatus, ProductType};
@@ -12,7 +13,7 @@ use Domain\Store\Models\Store;
 
 class Product extends BaseModel
 {    
-    use HasPublicId;
+    use HasPublicId, SoftDeletes;
 
     protected $fillable = [
         'title',

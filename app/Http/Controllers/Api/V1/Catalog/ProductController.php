@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Catalog;
 
 use App\Http\Controllers\Controller;
+use Domain\Catalog\Actions\DeleteProductAction;
 use Illuminate\Http\Request;
 
 use Domain\Catalog\Actions\InsertProductAction;
@@ -49,11 +50,15 @@ class ProductController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Store $store, Product $product)
+    public function destroy(Product $product)
     {
-        //
+        $result = DeleteProductAction::execute($product);
+
+        if($this->isActionExeption($result))
+            return $this->failedResponse(message: $result->getMessage());
+
+        return $this->successResponse(data: [
+            'public_id' => $product->public_id,
+        ]);
     }
 }
