@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('file_uploads', function (Blueprint $table) {
             $table->id();
+            $table->uuid('public_id')->unique();
             $table->foreignIdFor(Store::class)->constrained();
             $table->string('original_name', 200);
             $table->string('stored_name', 100);
