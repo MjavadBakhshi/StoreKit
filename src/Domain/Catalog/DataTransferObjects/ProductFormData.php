@@ -20,7 +20,8 @@ class ProductFormData extends Data
         public readonly string $slug,
         public readonly ?string $description,
         public readonly ?float $price,
-        public readonly int $stock = 0
+        public readonly int $stock = 0,
+        public readonly ?array $images,
     ) {}
 
     static function rules(Request $request) :array
@@ -34,7 +35,9 @@ class ProductFormData extends Data
                 'max:100', 
                 Rule::unique('products')
                 ->where(fn($query) => $query->where('store_id', $store->id))
-            ]
+            ],
+            'images' => 'nullable|array',
+            'images.*' => 'bail|file|mimes:jpg,jpeg,png,bmp,webp,gif|max:5120', # 5MB
         ];
     }
 }

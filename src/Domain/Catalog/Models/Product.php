@@ -20,13 +20,14 @@ class Product extends BaseModel
         'slug',
         'description',
         'status',
-        'product_type'
+        'product_type',
+        'images'
     ];
 
     protected $casts = [
         'status' => ProductStatus::class,
         'product_type' => ProductType::class,
-        'attributes' => 'array',
+        'images' => 'array',
     ];
 
     function newEloquentBuilder($query) :ProductBuilder

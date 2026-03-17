@@ -12,6 +12,7 @@ use Domain\Shared\Exceptions\ActionException;
 use Domain\Catalog\Models\{Product, ProductVariant};
 use Domain\Store\Models\Store;
 use Domain\Catalog\ViewModels\NewProductViewModel;
+use Domain\FileManager\Actions\UploadFilesAction;
 
 class InsertProductAction
 {
@@ -24,12 +25,21 @@ class InsertProductAction
             DB::beginTransaction();
 
                 $product = $store->products()->create([
-                    ...$data->except('product_type')->toArray(),
+                    ...$data->except('product_type', 'images')->toArray(),
                     'product_type' => $data->product_type,
                 ]);
                 
                 // Insert deffault product variant.
                 $productVariant = self::insertDefaultProductVariant($data, $product);
+
+                //TODO: it might upload iamges in the background to prevent latency
+                // Uploading images 
+                if(is_array($data->images) && !empty($data->images))
+                {
+                    $filesList = UploadFilesAction::execute($data->images, $store);
+                    if(is_array($filesList) && !empty($filesList))
+                        $product->update(['images' => $filesList]);
+                }
 
             DB::commit();
 
