@@ -4,15 +4,18 @@ namespace Domain\Catalog\Actions;
 
 use Illuminate\Support\Facades\DB;
 
+use Domain\FileManager\Actions\UploadFilesAction;
 use Domain\Catalog\DataTransferObjects\{
     ProductFormData,
     ProductVariantFormData
 };
 use Domain\Shared\Exceptions\ActionException;
-use Domain\Catalog\Models\{Product, ProductVariant};
+use Domain\Catalog\Models\Product;
 use Domain\Store\Models\Store;
-use Domain\Catalog\ViewModels\NewProductViewModel;
-use Domain\FileManager\Actions\UploadFilesAction;
+use Domain\Catalog\ViewModels\{
+    NewProductViewModel, 
+    ProductVariantViewModel
+};
 
 class InsertProductAction
 {
@@ -30,7 +33,7 @@ class InsertProductAction
                 ]);
                 
                 // Insert deffault product variant.
-                $productVariant = self::insertDefaultProductVariant($data, $product);
+                self::insertDefaultProductVariant($data, $product);
 
                 //TODO: it might upload iamges in the background to prevent latency
                 // Uploading images 
@@ -43,7 +46,7 @@ class InsertProductAction
 
             DB::commit();
 
-            return new NewProductViewModel($product, $productVariant);
+            return new NewProductViewModel($product);
         }
         catch(\Exception $e)
         {
@@ -57,7 +60,7 @@ class InsertProductAction
     private static function insertDefaultProductVariant(
         ProductFormData &$data, 
         Product &$product
-    ) :ProductVariant
+    ) :ProductVariantViewModel
     {
         // Prepare DTO
         $productVariantFormData = ProductVariantFormData::validateAndCreate([

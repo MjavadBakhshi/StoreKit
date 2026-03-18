@@ -21,4 +21,9 @@ class ProductVariantBuilder extends Builder
             )->where($bindingKey, $value)
             ->first();
     }
+
+    function defaultVariant()
+    {
+        return $this->where('is_default_variant', true);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Catalog;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 use Domain\Catalog\Actions\{
     UpsertProductVariantAction,
@@ -10,8 +11,6 @@ use Domain\Catalog\Actions\{
 };
 use Domain\Catalog\DataTransferObjects\ProductVariantFormData;
 use Domain\Catalog\Models\{Product, ProductVariant};
-use Domain\Catalog\ViewModels\NewProductVariantViewModel;
-use Illuminate\Http\Request;
 
 class ProductVariantController extends Controller
 {
@@ -28,8 +27,7 @@ class ProductVariantController extends Controller
         if($this->isActionExeption($result))
             return $this->failedResponse(message: $result->getMessage());
 
-        $viewModel = new NewProductVariantViewModel($result);
-        return $this->successResponse(data: $viewModel->toArray());
+        return $this->successResponse(data: $result->toArray());
     }
 
     public function update(

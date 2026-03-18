@@ -20,6 +20,7 @@ class ProductVariantFormData extends Data
         public readonly ?float $price,
         public readonly ?float $discounted_price,
         public readonly int $stock = 0,
+        public readonly ?string $image_id,
         public readonly ?string $sku,
         public readonly ?array $attributes,
         public readonly bool $is_default_variant = false,

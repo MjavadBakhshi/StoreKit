@@ -2,14 +2,15 @@
 
 namespace Tests\Feature\Catalog;
 
-use Domain\Catalog\Enums\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Concerns\AuthenticatedUser;
 use Tests\TestCase;
 
+use Domain\Catalog\Enums\ProductType;
 use Domain\Catalog\Models\{Product, ProductVariant};
+use Domain\FileManager\Models\FileUpload;
 
 class UpsertProductVariantTest extends TestCase
 {
@@ -105,6 +106,38 @@ class UpsertProductVariantTest extends TestCase
         );
 
         $response->assertStatus(403);
+    }
+
+    #[Test]
+    function set_an_image_for_a_variant_successfully()
+    {
+        // Add some images to the product.
+        $productImages = FileUpload::factory(3)->create([
+            'store_id' => $this->store->id
+        ]);
+
+        $product = Product::factory()->create([
+            'store_id' => $this->store->id,
+            'images' => $productImages->pluck('id')->toArray()
+        ]);
+
+
+        $variantData = [
+            ...$this->getRandomVariantData(),
+            # Choosing first image of the product
+            'image_id' => $productImages[0]->public_id
+        ];
+
+        $response = $this->postJson(
+            route('products.variants.store', $product),
+            $variantData
+        );
+
+        $response->assertStatus(200);
+
+        $imageId = $response->json('data.product_variant.image_id');
+        $this->assertEquals($productImages[0]->public_id, $imageId);
+
     }
 
     private function createNewVariant(array $data, ?ProductType $productType = null)

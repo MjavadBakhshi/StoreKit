@@ -3,20 +3,25 @@
 namespace Domain\Catalog\Actions;
 
 use Domain\Catalog\DataTransferObjects\ProductVariantFormData;
-use Domain\Catalog\Enums\ProductType;
+use Domain\Shared\Exceptions\ActionException;
 use Domain\Catalog\Models\Product;
-use Domain\Catalog\Models\ProductVariant;
+use Domain\FileManager\Models\FileUpload;
+use Domain\Catalog\ViewModels\ProductVariantViewModel;
 
 class UpsertProductVariantAction
 {
     static function execute(
         ProductVariantFormData $data,
         Product $product
-    ): ProductVariant|false
+    ): ProductVariantViewModel|ActionException
     {
         try {
+            // Get internal image id for stroing in DB
+            $imageId = self::getImageId($data, $product);
+
             $variantData = [
-                ...$data->except('public_id')->toArray(),
+                ...$data->except('public_id', 'image_id')->toArray(),
+                'image_id' => $imageId,
                 'sku' => $data->sku ?? self::generateRandomSKU($product->id)
             ];
             
@@ -42,12 +47,12 @@ class UpsertProductVariantAction
                 $productVariant = $product->variants()->create($variantData);
             }
 
-            return $productVariant;
+            return new ProductVariantViewModel($productVariant);
         }
         catch(\Exception $e)
         {
             logger()->info($e->getMessage());
-            return false;
+            return  ActionException::from($e);
         }
     }
 
@@ -55,5 +60,27 @@ class UpsertProductVariantAction
     {
         $random = explode('-', \Str::uuid()->toString())[0];
         return $productId.'-'.$random;
+    }
+
+    private static function getImageId(
+        ProductVariantFormData &$data, 
+        Product &$product
+    ) {
+
+        if(
+            !is_null($data->image_id) &&
+            !is_null($product->images) && 
+            !empty($product->images)
+        )
+        {
+            // Get product image ids.
+            $imageIdsList = FileUpload::getFilesGroupedByPublicId($product->images);
+            
+            return  isset($imageIdsList[$data->image_id])
+                    ? $imageIdsList[$data->image_id]['id']
+                    : null;
+        }
+
+        return null;
     }
 }

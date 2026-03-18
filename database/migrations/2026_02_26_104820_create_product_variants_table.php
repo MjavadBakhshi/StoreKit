@@ -21,6 +21,7 @@ return new class extends Migration
             // 99999999.99
             $table->decimal('price', 10, 2)->unsigned()->nullable();
             $table->unsignedBigInteger('stock')->default(0);
+            $table->unsignedBigInteger('image_id')->nullable();
             $table->json('attributes')->nullable();
             $table->timestamps();
             $table->softDeletes();
