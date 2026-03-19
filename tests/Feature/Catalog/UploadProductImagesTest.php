@@ -56,7 +56,9 @@ class UploadProductImagesTest extends TestCase
             [
                 'title' => 'Iphone 18',
                 'slug' => 'Iphone-18',
-                'stock' => 200,
+                'default_variant' => [
+                    'stock' => 200,
+                ],
                 'product_type' => ProductType::Physical->value,
                 'images' => $fakeFiles
             ],

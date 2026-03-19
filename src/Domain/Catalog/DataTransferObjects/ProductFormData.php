@@ -42,7 +42,7 @@ class ProductFormData extends Data
         $store = $request->store;
 
         // For checking slug is unique in update operation.
-        $productPublicId = $context->fullPayload['public_id'];
+        $productPublicId = $context->fullPayload['public_id'] ?? null;
 
         return [
             'slug' => [

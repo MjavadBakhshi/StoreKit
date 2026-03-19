@@ -33,7 +33,12 @@ class CreateProductTest extends TestCase
         $response->assertJson([
             'ok' => true,
             'data' => [
-                'product' => $productData
+                'product' => [
+                    ...collect($productData)
+                            ->except('default_variant'),
+                    'stock' => $productData['default_variant']['stock'],
+                    'price' => $productData['default_variant']['price']
+                ]
             ]
         ]);
     }
@@ -114,8 +119,10 @@ class CreateProductTest extends TestCase
             'title' =>  'Pull and bear T-shirt',
             'slug' => 'pull-and-bear-t-shirt',
             'description' => 'High quality t-shirt',
-            'stock' => 200,
-            'price' => 1999.9,
+            'default_variant' => [
+                'stock' => 200,
+                'price' => 1999.9,
+            ],
             'product_type' => fake()->randomElement(ProductType::values()),
         ];
     }
