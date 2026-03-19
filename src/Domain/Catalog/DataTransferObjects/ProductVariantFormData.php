@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\EnumCast;
+use Spatie\LaravelData\Support\Validation\ValidationContext;
 use Spatie\LaravelData\Data;
 
 use Domain\Catalog\Enums\ProductType;
-use Spatie\LaravelData\Support\Validation\ValidationContext;
 
 class ProductVariantFormData extends Data
 {
@@ -30,14 +30,8 @@ class ProductVariantFormData extends Data
     {
         // Get default attirbures rules
         $productType = $context->fullPayload['product_type'];
-        $attributesRules = $productType->defaultVariantAttributes();
-        // adding "attributes." prefix to adopt validation rulse.
-        $attributesRules = 
-        collect($attributesRules)
-            ->mapWithKeys(
-                fn($rules, $key) => ["attributes.$key" => $rules]
-            )->toArray();
 
+        $attributesRules = self::getProductTypeDefaultAttributeRules($productType);
         // attirbutes.df-store-weight => [...],
         // attributes.df-store-files => [...] 
         return [
@@ -56,5 +50,22 @@ class ProductVariantFormData extends Data
             ]);
 
         return self::from($request->all());
+    }
+
+    private static function getProductTypeDefaultAttributeRules(
+        ProductType $productType
+    ): array
+    {
+        $attributesRules = $productType->defaultVariantAttributes();
+        // adding "attributes." prefix to adopt validation rulse.
+        $attributesRules = 
+        collect($attributesRules)
+            ->mapWithKeys(
+                fn($rules, $key) => ["attributes.$key" => $rules]
+            )->toArray();
+
+        // attirbutes.df-store-weight => [...],
+        // attributes.df-store-files => [...] 
+        return $attributesRules;
     }
 }

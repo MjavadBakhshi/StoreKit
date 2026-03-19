@@ -5,7 +5,7 @@ namespace Domain\Catalog\ViewModels;
 use Domain\Catalog\Models\{Product, ProductVariant};
 use Domain\Shared\ViewModels\ViewModel;
 
-class NewProductViewModel extends ViewModel
+class ProductViewModel extends ViewModel
 {
     function __construct(
         protected Product $product
@@ -13,7 +13,7 @@ class NewProductViewModel extends ViewModel
 
     function product() :array
     {
-        $defaultVariant = $this->product->variants()->defaultVariant()->first();
+        $defaultVariant = $this->product->defaultVariant;
 
         return [
             ...$this->product->except(['id', 'product_type', 'status']),

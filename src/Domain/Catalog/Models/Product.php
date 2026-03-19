@@ -2,11 +2,11 @@
 
 namespace Domain\Catalog\Models;
 
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Domain\Catalog\Builders\ProductBuilder;
-use Domain\Catalog\Enums\{ProductStatus, ProductType};
+use Domain\Catalog\Enums\{ProductStatus, ProductType, SEORobot};
 use Domain\Shared\Models\BaseModel;
 use Domain\Shared\Models\Concerns\HasPublicId;
 use Domain\Store\Models\Store;
@@ -21,12 +21,19 @@ class Product extends BaseModel
         'description',
         'status',
         'product_type',
-        'images'
+        'images',
+        'meta_keywords',
+        'tags',
+        'page_title',
+        'canonical_url',
+        'redirect301_url',
+        'robot',
     ];
 
     protected $casts = [
         'status' => ProductStatus::class,
         'product_type' => ProductType::class,
+        'robot' => SEORobot::class,
         'images' => 'array',
     ];
 
@@ -45,6 +52,12 @@ class Product extends BaseModel
     function variants() :HasMany
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    function defaultVariant() :HasOne
+    {
+        return $this->hasOne(ProductVariant::class, 'product_id', 'id')
+                    ->where('is_default_variant', true);
     }
 
 

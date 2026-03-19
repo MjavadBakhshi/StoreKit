@@ -38,10 +38,17 @@ Route::prefix('v1')->group(function () {
                 // Catalog
 
                 // products
+
+                Route::apiResource(
+                    '/products',
+                    ProductController::class
+                )->only(['index', 'store', 'show']);
+
                 Route::apiResource(
                     '/products', 
                     ProductController::class
-                );
+                )->middleware(EntityStoreOwnershipChecker::class.':product')
+                ->except(['index', 'store']);
                 
                 // product variants
                 Route::apiResource(
