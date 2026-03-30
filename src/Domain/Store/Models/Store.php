@@ -5,7 +5,7 @@ namespace Domain\Store\Models;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 use Domain\Account\Models\User;
-use Domain\Catalog\Models\Product;
+use Domain\Catalog\Models\{Product, ProductCategory};
 use Domain\Shared\Models\BaseModel;
 use Domain\Shared\Models\Concerns\HasPublicId;
 
@@ -36,4 +36,11 @@ class Store extends BaseModel
     {
         return $this->hasMany(Product::class);
     }
+
+    function productCategories() :HasMany
+    {
+        return $this->hasMany(ProductCategory::class);
+    }
+
+
 }

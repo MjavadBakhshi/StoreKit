@@ -23,6 +23,7 @@ class Product extends BaseModel
         'product_type',
         'images',
         'meta_keywords',
+        'meta_description',
         'tags',
         'page_title',
         'canonical_url',

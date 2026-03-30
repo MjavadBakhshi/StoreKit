@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
 
-            $table->text('tags')->index()->nullable();
+            $table->text('tags')->nullable();
             $table->string('page_title', 60)->nullable();
             $table->string('meta_description', 155)->nullable();
             $table->text('meta_keywords')->nullable();

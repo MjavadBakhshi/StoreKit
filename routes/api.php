@@ -8,8 +8,10 @@ use App\Http\Controllers\Api\V1\{
     Catalog\ProductController,
     Catalog\ProductVariantController,
     Catalog\Shop\ShopProductController,
+    Catalog\ProductCategoryController,
     Cart\Shop\ShopCartController,
 };
+
 // Middlewares
 use Domain\Catalog\Middleware\{ShopProductBinder, ShopProductVariantBinder};
 use Domain\Store\Middleware\{
@@ -59,6 +61,24 @@ Route::prefix('v1')->group(function () {
                 ->parameters(['variants' => 'product_variant'])
                 ->middleware(EntityStoreOwnershipChecker::class.':product')
                 ->except(['index', 'show']);
+
+
+                // product category
+                Route::apiResource(
+                    '/produccts/categories',
+                    ProductCategoryController::class
+                )
+                ->names('products.categories')
+                ->only(['index', 'store']);
+
+                Route::apiResource(
+                    '/produccts/categories',
+                    ProductCategoryController::class
+                )
+                ->parameters(['categories' => 'product_category'])
+                ->names('products.categories')
+                ->middleware(EntityStoreOwnershipChecker::class.':product_category')
+                ->except(['index', 'store']);
 
             });
             
